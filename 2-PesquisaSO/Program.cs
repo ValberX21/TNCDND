@@ -25,8 +25,6 @@ class Program
 
         int totalVotosPesquisa = 0;
 
-        List<List<DtPesquisa>> resultado = new List<List<DtPesquisa>>();
-
         while (finalizaProgram == 1)
         {
             Console.Write("Qual o melhor Sistema Operacional para uso em servidores?\n");
@@ -109,12 +107,8 @@ class Program
 
             calculaResultadoPesquisa(sistemas, totalVotosPesquisa);
         }
-        else
-        {
-          
-        }
-      
     }
+    
     public static void calculaResultadoPesquisa(List<DtPesquisa> sistemas, int totalVotos)
     {
 

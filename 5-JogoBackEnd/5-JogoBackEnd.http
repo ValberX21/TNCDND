@@ -1,0 +1,6 @@
+@_5_JogoBackEnd_HostAddress = http://localhost:5250
+
+GET {{_5_JogoBackEnd_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

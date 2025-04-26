@@ -1,0 +1,88 @@
+﻿@page "/"
+
+@inject NavigationManager Navigation
+@inject _5_JogoFrontEndWeb.Services.LoginState LoginState
+
+<div class="d-flex justify-content-center align-items-center min-vh-100">
+    <div class="d-flex gap-5">
+
+        <!-- Login Form -->
+        <div class="card p-4" style="width: 300px;">
+            <h3>Login</h3>
+
+            <div>
+                <label>Username:</label>
+                <input @bind="Username" class="form-control" />
+
+                <label class="mt-2">Password:</label>
+                <input type="password" @bind="Password" class="form-control" />
+
+                <button @onclick="DoLogin" class="btn btn-primary mt-3">Login</button>
+
+                @if (!string.IsNullOrEmpty(Message))
+                {
+                    <p class="text-danger mt-2">@Message</p>
+                }
+            </div>
+        </div>
+
+        <!-- Create User Form -->
+        <div class="card p-4" style="width: 300px;">
+            <h3>Create User</h3>
+
+            <div>
+                <label>Username:</label>
+                <input @bind="NewUsername" class="form-control" />
+
+                <label class="mt-2">Password:</label>
+                <input type="password" @bind="NewPassword" class="form-control" />
+
+                <button @onclick="DoCreateUser" class="btn btn-success mt-3">Create</button>
+
+                @if (!string.IsNullOrEmpty(CreateMessage))
+                {
+                    <p class="text-success mt-2">@CreateMessage</p>
+                }
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@code {
+    private string Username = "";
+    private string Password = "";
+    private string Message = "";
+
+    private string NewUsername = "";
+    private string NewPassword = "";
+    private string CreateMessage = "";
+
+    private void DoLogin()
+    {
+        if (Username == "admin" && Password == "123")
+        {
+            LoginState.Login();
+            Navigation.NavigateTo("/home");
+        }
+        else
+        {
+            Message = "Invalid username or password.";
+        }
+    }
+
+    private void DoCreateUser()
+    {
+        // Simulate user creation
+        if (!string.IsNullOrWhiteSpace(NewUsername) && !string.IsNullOrWhiteSpace(NewPassword))
+        {
+            CreateMessage = $"User {NewUsername} created!";
+            NewUsername = "";
+            NewPassword = "";
+        }
+        else
+        {
+            CreateMessage = "Please fill all fields.";
+        }
+    }
+}

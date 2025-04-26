@@ -1,0 +1,37 @@
+﻿@inherits LayoutComponentBase
+@implements IDisposable
+@inject _5_JogoFrontEndWeb.Services.LoginState LoginState
+
+<PageTitle>5-JogoFrontEndWeb</PageTitle>
+
+<div class="page">
+    @if (LoginState.IsLoggedIn)
+    {
+        <div class="sidebar">
+            <NavMenu />
+        </div>
+    }
+
+    <main>
+        <div class="top-row px-4">
+            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
+        </div>
+
+        <article class="content px-4">
+            @Body
+        </article>
+    </main>
+</div>
+
+@code {
+    protected override void OnInitialized()
+    {
+        LoginState.OnChange += StateHasChanged;
+    }
+
+    public void Dispose()
+    {
+        LoginState.OnChange -= StateHasChanged;
+    }
+}
+

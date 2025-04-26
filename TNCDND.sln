@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "3-Vendedores", "3-Vendedore
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "4-MercadoCarne", "4-MercadoCarne\4-MercadoCarne.csproj", "{4AAB1171-1C51-4C7D-BE91-69A277743429}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "5-JogoFrontEndWeb", "5-JogoFrontEndWeb\5-JogoFrontEndWeb.csproj", "{923701E1-0C4B-42B3-8F7F-82E93996C5B7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{4AAB1171-1C51-4C7D-BE91-69A277743429}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4AAB1171-1C51-4C7D-BE91-69A277743429}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4AAB1171-1C51-4C7D-BE91-69A277743429}.Release|Any CPU.Build.0 = Release|Any CPU
+		{923701E1-0C4B-42B3-8F7F-82E93996C5B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{923701E1-0C4B-42B3-8F7F-82E93996C5B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{923701E1-0C4B-42B3-8F7F-82E93996C5B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{923701E1-0C4B-42B3-8F7F-82E93996C5B7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

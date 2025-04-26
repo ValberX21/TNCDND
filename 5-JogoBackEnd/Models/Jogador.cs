@@ -1,9 +1,14 @@
-﻿namespace _5_JogoBackEnd.Models
+﻿using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+
+namespace _5_JogoBackEnd.Models
 {
     public class Jogador
     {
-        public int IdJogador { get; set; }
-        public string NomeJgador { get; set; }
-        public byte[] Senha { get; set; }
+        [BsonId]
+        [BsonRepresentation(BsonType.String)]
+        public Guid IdJogador { get; set; }
+        public string NomeJogador { get; set; }
+        public string Senha { get; set; }
     }
 }

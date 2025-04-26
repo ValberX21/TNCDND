@@ -14,7 +14,7 @@ namespace _5_JogoBackEnd.Data
             _database = client.GetDatabase(options.Value.DatabaseName);
         }
 
-        public IMongoCollection<HistoricoJogos> HistoricoJogos => _database.GetCollection<HistoricoJogos>("HistoricoJogos");
-        public IMongoCollection<HistoricoJogos> Jogador => _database.GetCollection<HistoricoJogos>("Jogador");
+ public IMongoCollection<HistoricoJogos> HistoricoJogos => _database.GetCollection<HistoricoJogos>("HistoricoJogos");
+        public IMongoCollection<Jogador> Jogadores => _database.GetCollection<Jogador>("Jogadores"); 
     }
 }

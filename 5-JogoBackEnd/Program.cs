@@ -9,11 +9,9 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.Configure<MongoDbSettings>(
-    builder.Configuration.GetSection("MongoDbSettings"));
+builder.Services.Configure<MongoDbSettings>(builder.Configuration.GetSection("MongoDbSettings"));
 
 builder.Services.AddSingleton<MongoDbContext>();
-
 
 var app = builder.Build();
 
@@ -25,6 +23,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.MapGet("/", () => "API Minimal MongoDB OK!");
+
+app.MapJogadorEndpoints();
 
 
 app.UseHttpsRedirection();

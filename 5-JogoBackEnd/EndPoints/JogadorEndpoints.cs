@@ -8,7 +8,7 @@ public static class JogadorEndpoints
     {
         var group = app.MapGroup("/jogadores");
 
-       group.MapPost("/login", async (Jogador jogador, MongoDbContext db) =>
+        group.MapPost("/login", async (Jogador jogador, MongoDbContext db) =>
         {
             var DtJogador = await db.Jogadores
                 .Find(j => j.NomeJogador == jogador.NomeJogador)
@@ -29,7 +29,6 @@ public static class JogadorEndpoints
             return Results.Ok(new { message = "Login successful!" });
         });
 
-
         group.MapPost("/create", async (Jogador jogador, MongoDbContext db) =>
         {
             jogador.IdJogador = Guid.NewGuid();
@@ -37,6 +36,13 @@ public static class JogadorEndpoints
 
             await db.Jogadores.InsertOneAsync(jogador);
             return Results.Created($"/jogadores/{jogador.IdJogador}", jogador);
+        });
+
+        group.MapGet("/listJogadores", async ( MongoDbContext db) => 
+        {
+            var jogadoresCursor = await db.Jogadores.FindAsync(_ => true);
+            var jogadores = await jogadoresCursor.ToListAsync();
+            return Results.Ok(jogadores);
         });
     }
 }

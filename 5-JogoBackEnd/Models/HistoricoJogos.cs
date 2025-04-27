@@ -5,7 +5,9 @@ namespace _5_JogoBackEnd.Models
 {
     public class HistoricoJogos
     {
-        public string? Id { get; set; }
+        [BsonId]
+        [BsonRepresentation(BsonType.String)]
+        public Guid IdJogo { get; set; }
 
         public string CodJogador { get; set; }
 

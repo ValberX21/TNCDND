@@ -1,88 +1,120 @@
 ﻿@page "/"
 
+@inject HttpClient Http
 @inject NavigationManager Navigation
 @inject _5_JogoFrontEndWeb.Services.LoginState LoginState
+@using _5_JogoFrontEndWeb.Models
 
 <div class="d-flex justify-content-center align-items-center min-vh-100">
     <div class="d-flex gap-5">
 
-        <!-- Login Form -->
         <div class="card p-4" style="width: 300px;">
             <h3>Login</h3>
 
-            <div>
-                <label>Username:</label>
-                <input @bind="Username" class="form-control" />
+            <EditForm Model="@loginData" OnValidSubmit="LoginJogador">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
 
-                <label class="mt-2">Password:</label>
-                <input type="password" @bind="Password" class="form-control" />
+                <div>
+                    <label>Nome do jogador:</label>
+                    <InputText @bind-Value="loginData.NomeJogador" class="form-control" />
 
-                <button @onclick="DoLogin" class="btn btn-primary mt-3">Login</button>
+                    <label class="mt-2">Password:</label>
+                    <InputText @bind-Value="loginData.Senha" class="form-control" type="password" />
 
-                @if (!string.IsNullOrEmpty(Message))
-                {
-                    <p class="text-danger mt-2">@Message</p>
-                }
-            </div>
+                    <button type="submit" class="btn btn-primary mt-3">Login</button>
+
+                    @if (!string.IsNullOrEmpty(Message))
+                    {
+                        <p class="text-danger mt-2">@Message</p>
+                    }
+                </div>
+            </EditForm>
         </div>
 
-        <!-- Create User Form -->
         <div class="card p-4" style="width: 300px;">
             <h3>Create User</h3>
 
-            <div>
-                <label>Username:</label>
-                <input @bind="NewUsername" class="form-control" />
+            <EditForm Model="@createData" OnValidSubmit="CreateJogador">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
 
-                <label class="mt-2">Password:</label>
-                <input type="password" @bind="NewPassword" class="form-control" />
+                <div>
+                    <label>Nome do novo jogador:</label>
+                    <InputText @bind-Value="createData.NovoJogadorNome" class="form-control" />
 
-                <button @onclick="DoCreateUser" class="btn btn-success mt-3">Create</button>
+                    <label class="mt-2">Senha:</label>
+                    <InputText @bind-Value="createData.NovoJogadorSenha" class="form-control" type="password" />
 
-                @if (!string.IsNullOrEmpty(CreateMessage))
-                {
-                    <p class="text-success mt-2">@CreateMessage</p>
-                }
-            </div>
+                    <button type="submit" class="btn btn-success mt-3">Create</button>
+
+                    @if (!string.IsNullOrEmpty(CreateMessage))
+                    {
+                        <p class="text-success mt-2">@CreateMessage</p>
+                    }
+                </div>
+            </EditForm>
         </div>
 
     </div>
 </div>
 
 @code {
-    private string Username = "";
-    private string Password = "";
+    private LoginModel loginData = new();
+    private CreateModel createData = new();
     private string Message = "";
-
-    private string NewUsername = "";
-    private string NewPassword = "";
     private string CreateMessage = "";
 
-    private void DoLogin()
+    private async Task LoginJogador()
     {
-        if (Username == "admin" && Password == "123")
+        try
         {
-            LoginState.Login();
-            Navigation.NavigateTo("/home");
+            var response = await Http.PostAsJsonAsync("https://localhost:44387/jogadores/login", new
+            {
+                NomeJogador = loginData.NomeJogador,
+                Senha = loginData.Senha
+            });
+
+            if (response.IsSuccessStatusCode)
+            {
+                LoginState.Login();
+                Navigation.NavigateTo("/home", replace: true);
+            }
+            else
+            {
+                Message = "Jogador ou senha incorretos";
+            }
         }
-        else
+        catch (Exception ex)
         {
-            Message = "Invalid username or password.";
+            Message = $"Erro ao tentar logar: {ex.Message}";
         }
     }
 
-    private void DoCreateUser()
+    private async Task CreateJogador()
     {
-        // Simulate user creation
-        if (!string.IsNullOrWhiteSpace(NewUsername) && !string.IsNullOrWhiteSpace(NewPassword))
+        try
         {
-            CreateMessage = $"User {NewUsername} created!";
-            NewUsername = "";
-            NewPassword = "";
+            var response = await Http.PostAsJsonAsync("/jogadores", new
+            {
+                Nome = createData.NovoJogadorNome,
+                Senha = createData.NovoJogadorSenha
+            });
+
+            if (response.IsSuccessStatusCode)
+            {
+                CreateMessage = $"Usuário {createData.NovoJogadorNome} criado com sucesso!";
+                createData = new CreateModel(); // limpa os campos
+            }
+            else
+            {
+                CreateMessage = "Erro ao criar usuário. Status: " + response.StatusCode;
+            }
         }
-        else
+        catch (Exception ex)
         {
-            CreateMessage = "Please fill all fields.";
+            CreateMessage = $"Erro de comunicação: {ex.Message}";
         }
     }
+
 }

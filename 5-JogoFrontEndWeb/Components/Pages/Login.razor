@@ -4,6 +4,8 @@
 @inject NavigationManager Navigation
 @inject _5_JogoFrontEndWeb.Services.LoginState LoginState
 @using _5_JogoFrontEndWeb.Models
+@inject Jogador JogadorDados
+@inject Blazored.LocalStorage.ILocalStorageService LocalStorage
 
 <div class="d-flex justify-content-center align-items-center min-vh-100">
     <div class="d-flex gap-5">
@@ -77,8 +79,21 @@
 
             if (response.IsSuccessStatusCode)
             {
-                LoginState.Login();
-                Navigation.NavigateTo("/home", replace: true);
+                var dadosJogado = await response.Content.ReadFromJsonAsync<LoginResponse>();
+
+                if(dadosJogado != null)
+                {
+                    await LocalStorage.SetItemAsync("idJogador", dadosJogado.Jogador.IdJogador);
+                    await LocalStorage.SetItemAsync("nomeJogador", dadosJogado.Jogador.NomeJogador);
+
+                    LoginState.Login();
+                    Navigation.NavigateTo("/home", replace: true);
+
+                }else
+                {
+                    Message = "Erro ao carregador os dados do jogador";
+                }
+               
             }
             else
             {

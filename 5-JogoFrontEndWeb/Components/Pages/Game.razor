@@ -1,0 +1,238 @@
+﻿@page "/game"
+@using _5_JogoFrontEndWeb.Models
+
+@inject HttpClient Http
+@inject IJSRuntime JS
+@inject Blazored.LocalStorage.ILocalStorageService LocalStorage
+
+<PageTitle>Game</PageTitle>
+
+<h1>Advinhe o número do dado RPG (D4,D8 e D10)</h1>
+<br/>
+<br/>
+<br/>
+<div class="row">
+
+    <div class="col-6">
+        <br/>
+        <p>Selecione uma dificuldade para iniciar o jogo</p>
+
+        <select class="form-select" @bind="selectedDifficulty">
+            <option value="">-- Selecione --</option>
+            @foreach (var dificuldade in dificuldades)
+            {
+                <option value="@dificuldade.Key">@dificuldade.Key (Tentativas: @dificuldade.Value)</option>
+            }
+        </select>
+
+        <button class="btn btn-primary mt-3" @onclick="StartGame">Iniciar Jogo</button>
+
+        @if (gameStarted)
+        {
+            <div class="mt-4">
+                <input type="number" class="form-control" @bind="numeroDigitado" placeholder="Digite seu palpite" />
+                <button class="btn btn-success mt-2" @onclick="ConfirmarTentativa">Confirmar Número</button>
+            </div>
+        }
+
+        @if(color)
+        {
+            <p class="text-success mt-2">@Message</p>
+        }
+        else
+        {
+            <p class="text-danger mt-2">@Message</p>
+        }
+
+
+    </div>
+
+    <div class="col-6">
+        <h2>Tentativas Realizadas</h2>
+
+        @if (userTries.Count == 0)
+        {
+            <p>Ainda não houve tentativas.</p>
+        }
+        else
+        {
+            <ul class="list-group">
+                @foreach (var attempt in userTries)
+                {
+                    <li class="list-group-item">
+                        Voce ja jogou: @attempt.VALOR_TENTATIVA
+                    </li>
+                }
+            </ul>
+        }
+    </div>
+</div>
+
+@code {
+    private Dictionary<string, int> dificuldades = new Dictionary<string, int>
+    {
+        { "Fácil", 3 }, // número de 1 a 4
+        { "Médio", 4 }, // número de 1 a 8
+        { "Difícil", 2 }, // número de 1 a 10
+    };
+
+    private bool gameStarted = false;
+    private string selectedDifficulty = "";
+    private List<HistoricoTentativas> userTries = new List<HistoricoTentativas>();
+    private int numeroDigitado = 0;
+    private int tentativas = 0;
+    private string Message = "";
+    private int numeroAlvo = 0;
+    private Random rng = new Random();
+    private bool color = false;
+    private Guid idGame  = Guid.NewGuid();
+    private string idJogador = "";
+    private string nomeJogador = "";
+    private int numeroTentativa = 0;
+
+    private void StartGame()
+    {
+        if (!string.IsNullOrEmpty(selectedDifficulty))
+        {
+            tentativas = dificuldades[selectedDifficulty];
+
+            switch(selectedDifficulty){
+                case "Fácil":
+                    numeroAlvo = rng.Next(1, 4);
+                    break;
+                case "Médio":
+                    numeroAlvo = rng.Next(1,8);
+                    break;
+                case "Difícil":
+                    numeroAlvo = rng.Next(1, 10);
+                    break;
+            }
+
+            userTries.Clear();
+            gameStarted = true;
+        }
+    }
+
+    private async Task ConfirmarTentativa()
+    {
+        if (numeroDigitado > 0)
+        {
+            HistoricoTentativas numeroJaJogado = userTries.Find(T => T.VALOR_TENTATIVA == numeroDigitado);
+            numeroTentativa++;
+
+            if (numeroJaJogado != null)
+            {
+                bool resposta = await JS.InvokeAsync<bool>("confirm", "Você ja jogou esse numero \n Tem CERTEZA que quer jogalo novamente ?");
+
+                if(resposta)
+                {
+                    var response = await Http.PostAsJsonAsync("https://localhost:44387/historicoTentativas/create", new
+                    {
+                        IdHistoriTentativa = Guid.NewGuid(),
+                        IdJogo = idGame,
+                        COD_JOGADOR = idJogador,
+                        VALOR_TENTATIVA = numeroDigitado,
+                        NUM_TENTATIVA = numeroTentativa,
+                        DataHoraTentativa = DateTime.Now,
+                        Resultado = "WRONG"
+                    });
+                    await LoadUserTries();
+
+                    numeroDigitado = 0;
+                    StateHasChanged();
+                    return;
+                }
+                else
+                {
+                    numeroDigitado = 0;
+                    return; 
+                }
+
+            }
+
+            if(numeroDigitado == numeroAlvo)
+            {
+                var response = await Http.PostAsJsonAsync("https://localhost:44387/historicoTentativas/create", new
+                {
+                    IdHistoriTentativa = Guid.NewGuid(),
+                    IdJogo = idGame,
+                    COD_JOGADOR = idJogador,
+                    VALOR_TENTATIVA = numeroDigitado,
+                    NUM_TENTATIVA = numeroTentativa,
+                    DataHoraTentativa = DateTime.Now,
+                    Resultado = "SUCCESS"
+                });
+
+                await LoadUserTries();
+
+                JS.InvokeVoidAsync("alert", "CONGRATULATIONS, VC VENCEU !!!");
+                resetGame();
+            }
+            else 
+            {
+                var response = await Http.PostAsJsonAsync("https://localhost:44387/historicoTentativas/create", new
+                {
+                    IdHistoriTentativa = Guid.NewGuid(),
+                    IdJogo = idGame,
+                    COD_JOGADOR = idJogador,
+                    VALOR_TENTATIVA = numeroDigitado,
+                    NUM_TENTATIVA = numeroTentativa,
+                    DataHoraTentativa = DateTime.Now,
+                    Resultado = "WRONG"
+                });
+                await LoadUserTries();
+                numeroDigitado = 0;
+               
+            }
+
+            if (userTries.Count == tentativas)
+            {
+                JS.InvokeVoidAsync("alert", "VC PERDEU AMIGO AHAHA !!!");
+                resetGame();
+            }
+                  
+        }
+        else
+        {
+            Message = "Fazor digitar um numero maior que zero";
+        }
+    }
+
+    private void resetGame()
+    {
+        gameStarted = false;
+        selectedDifficulty = "";
+        userTries.Clear();
+        numeroDigitado = 0;
+        tentativas = 0;
+        Message = "";
+        numeroAlvo = 0;        
+        color = false;
+        numeroDigitado = 0;
+        idGame = Guid.Empty;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        idJogador = await LocalStorage.GetItemAsync<string>("idJogador");
+        nomeJogador = await LocalStorage.GetItemAsync<string>("nomeJogador");
+    }
+
+    private async Task LoadUserTries()
+    {
+        try
+        {
+            var response = await Http.GetFromJsonAsync<List<HistoricoTentativas>>($"https://localhost:44387/historicoTentativas/listHistoricoTentativas/{idGame}");
+
+            if (response != null)
+            {
+                userTries = response;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Erro ao buscar tentativas: {ex.Message}");
+        }
+    }
+
+}

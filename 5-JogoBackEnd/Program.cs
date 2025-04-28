@@ -34,7 +34,7 @@ if (app.Environment.IsDevelopment())
 app.MapGet("/", () => "API Minimal MongoDB OK!");
 
 app.MapJogadorEndpoints();
-app.MapHistoricoJogosEndpoints();
+app.MaHistoricoTentativasEndpoints();
 
 app.UseHttpsRedirection();
 

@@ -16,17 +16,17 @@ public static class JogadorEndpoints
 
             if (DtJogador is null)
             {
-                return Results.Json(new { message = "User not found." }, statusCode: StatusCodes.Status401Unauthorized);
+                return Results.Json(new { message = "Jogador não encontrado." }, statusCode: StatusCodes.Status401Unauthorized);
             }
 
             var hashedInputPassword = PasswordHelper.HashPassword(jogador.Senha);
 
             if (DtJogador.Senha != hashedInputPassword)
             {
-                return Results.Json(new { message = "Invalid password." }, statusCode: StatusCodes.Status401Unauthorized);
+                return Results.Json(new { message = "Senha invalida." }, statusCode: StatusCodes.Status401Unauthorized);
             }
 
-            return Results.Ok(new { message = "Login successful!" });
+            return Results.Json(new { message = "Login successful!", jogador = DtJogador }, statusCode: StatusCodes.Status200OK);
         });
 
         group.MapPost("/create", async (Jogador jogador, MongoDbContext db) =>

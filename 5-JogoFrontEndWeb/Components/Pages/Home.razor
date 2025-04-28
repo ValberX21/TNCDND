@@ -1,7 +1,29 @@
 ﻿@page "/home"
+@inject NavigationManager Navigation
+@inject Blazored.LocalStorage.ILocalStorageService LocalStorage
 
-<PageTitle>Home</PageTitle>
+<PageTitle>Jogo advinhe o numero</PageTitle>
 
-<h1>Hello, world!</h1>
+<h1>Bem vindo de volta @nomeJogador</h1>
 
-Welcome to your new app.
+
+<button class="btn btn-primary" @onclick="iniciarPartida">JOGAR</button>
+
+@code {
+
+    private string idJogador = "";
+    private string nomeJogador = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        idJogador = await LocalStorage.GetItemAsync<string>("idJogador");
+        nomeJogador = await LocalStorage.GetItemAsync<string>("nomeJogador");
+    }
+
+    private void iniciarPartida()
+    {
+        Navigation.NavigateTo("/game", replace: true);
+    }
+
+
+}

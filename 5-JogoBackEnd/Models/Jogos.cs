@@ -3,7 +3,7 @@ using MongoDB.Bson;
 
 namespace _5_JogoBackEnd.Models
 {
-    public class HistoricoJogos
+    public class Jogos
     {
         [BsonId]
         [BsonRepresentation(BsonType.String)]
@@ -11,9 +11,7 @@ namespace _5_JogoBackEnd.Models
 
         public string CodJogador { get; set; }        
 
-        public DateTime DataHoraJgo { get; set; }
-
-        public HistoricoTentativas historicoTentativas { get; set; } 
+        public string RESULTADO_JOGO { get; set; }
        
     }
 }

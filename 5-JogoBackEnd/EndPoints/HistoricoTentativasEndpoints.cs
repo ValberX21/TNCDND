@@ -23,8 +23,6 @@ public static class HistoricoTentativasEndpoints
                 .ToListAsync();
 
             return Results.Ok(jogos);
-        });
-
-        
+        });  
     }
 }

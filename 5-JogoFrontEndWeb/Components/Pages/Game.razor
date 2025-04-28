@@ -169,17 +169,18 @@
                 });
 
                 //Salva resultado final do jogo
-                var responseJogo = await Http.PostAsJsonAsync("https://localhost:44387/jogo/create", new
+                var responseJogo = await Http.PostAsJsonAsync("https://localhost:44387/jogos/create", new
                 {
                     IdJogo = idGame,
                     COD_JOGADOR = idJogador,
                     RESULTADO_JOGO = JogoResultado.VITORIA.ToString()
-            });
+                });
 
                 await LoadUserTries();
 
                 JS.InvokeVoidAsync("alert", "CONGRATULATIONS, VC VENCEU !!!");
                 resetGame();
+                return;
             }
             else 
             {

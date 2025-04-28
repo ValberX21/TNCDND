@@ -1,4 +1,5 @@
 using _5_JogoBackEnd.Data;
+using _5_JogoBackEnd.EndPoints;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,6 +36,7 @@ app.MapGet("/", () => "API Minimal MongoDB OK!");
 
 app.MapJogadorEndpoints();
 app.MaHistoricoTentativasEndpoints();
+app.MapJogos();
 
 app.UseHttpsRedirection();
 

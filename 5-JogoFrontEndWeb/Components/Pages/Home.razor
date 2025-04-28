@@ -6,6 +6,17 @@
 
 <h1>Bem vindo de volta @nomeJogador</h1>
 
+<div class="card mt-4" style="width: 22rem;">
+    <div class="card-body">
+        <h5 class="card-title">Seu Desempenho</h5>
+
+        <p class="card-text">
+            <strong>Vitórias:</strong> @vitorias <br />
+            <strong>Derrotas:</strong> @derrotas <br />
+            <strong>Taxa de Vitória:</strong> @porcentagemVitória.ToString("0.00")%
+        </p>
+    </div>
+</div>
 
 <button class="btn btn-primary" @onclick="iniciarPartida">JOGAR</button>
 
@@ -13,11 +24,31 @@
 
     private string idJogador = "";
     private string nomeJogador = "";
+    private int vitorias = 0;
+    private int derrotas = 0;
+    private double porcentagemVitória = 0;
 
     protected override async Task OnInitializedAsync()
     {
         idJogador = await LocalStorage.GetItemAsync<string>("idJogador");
         nomeJogador = await LocalStorage.GetItemAsync<string>("nomeJogador");
+
+        // MOCK de dados para exemplo:
+        vitorias = 8;   // <-- aqui seria o retorno da API
+        derrotas = 2;   // <-- aqui também
+
+        // Calcular a porcentagem de vitórias:
+        int totalPartidas = vitorias + derrotas;
+
+        if (totalPartidas > 0)
+        {
+            porcentagemVitória = (vitorias * 100.0) / totalPartidas;
+        }
+        else
+        {
+            porcentagemVitória = 0;
+        }
+
     }
 
     private void iniciarPartida()

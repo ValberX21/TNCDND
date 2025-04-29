@@ -1,7 +1,12 @@
 using _5_JogoBackEnd.Data;
 using _5_JogoBackEnd.EndPoints;
+using MongoDB.Bson.Serialization.Serializers;
+using MongoDB.Bson.Serialization;
+using MongoDB.Bson;
 
 var builder = WebApplication.CreateBuilder(args);
+
+BsonSerializer.RegisterSerializer(new GuidSerializer(GuidRepresentation.Standard));
 
 // Add services to the container.
 

@@ -1,0 +1,106 @@
+﻿@page "/historicoJogos"
+@using _5_JogoFrontEndWeb.Models
+@inject HttpClient Http
+@inject Blazored.LocalStorage.ILocalStorageService LocalStorage
+
+<PageTitle>Historico de Jogos</PageTitle>
+
+<h1>Historico de jogos</h1>
+
+<div class="row">
+    <div class="col-6">
+        <h2>Tentativas Realizadas</h2>
+
+        @if (histoGames.Count == 0)
+        {
+            <p>Nenhuma partida encontrada.</p>
+        }
+        else
+        {
+            <ul class="list-group">
+                @foreach (var attempt in histoGames)
+                {
+                    <li class="list-group-item" @onclick="@(() => ToggleDetails(attempt.IdJogo))" style="cursor: pointer;">
+                        <strong>ID:</strong> @attempt.IdJogo
+                        <br />
+                        <strong>Resultado:</strong> @attempt.RESULTADO_JOGO
+                        <br />
+                        <strong>Data:</strong> @attempt.DataHoraJogo
+
+                        @if (selectedId == attempt.IdJogo)
+                        {
+                            <p>@attempt.DIFICULDADE</p>
+                            <div class="mt-2">                                
+                                <p>Lista de tentativas</p>
+                                @foreach (var tentativas in tentativas)
+                                {
+                                    <strong>Tentativa Numero: @tentativas.NUM_TENTATIVA / Valor Jogado: @tentativas.VALOR_TENTATIVA </strong>
+                                    <br />
+                                }
+                            </div>
+                        }
+                    </li>
+                }
+            </ul>
+        }
+    </div>
+</div>
+
+@code {
+
+    private List<HistoricoTentativas> tentativas = new List<HistoricoTentativas>();
+    private List<Jogos> histoGames = new List<Jogos>();
+    private Guid selectedId = Guid.Empty;
+    private string idJogador = "";
+    private string nomeJogador = "";
+    private bool retornouDt = false;
+
+
+
+    private async Task LoadUserTries()
+    {
+        try
+        {
+            var response = await Http.GetFromJsonAsync<List<Jogos>>($"https://localhost:44387/jogos/listjogos/{idJogador}");
+
+            if (response != null)
+            {
+                histoGames = response;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"{ex.Message}");
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        idJogador = await LocalStorage.GetItemAsync<string>("idJogador");
+        nomeJogador = await LocalStorage.GetItemAsync<string>("nomeJogador");
+
+        await LoadUserTries();
+    }
+
+    private async Task ToggleDetails(Guid id)
+    {
+        try
+        {
+            var response = await Http.GetFromJsonAsync <List<HistoricoTentativas>> ($"https://localhost:44387/historicoTentativas/listHistoricoTentativas/{id}");
+
+            if (response != null)
+            {
+                tentativas = response;
+
+                if (selectedId == id)
+                    selectedId = Guid.Empty; // hide details if clicked again
+                else
+                    selectedId = id;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Erro ao buscar tentativas: {ex.Message}");
+        }
+    }
+}

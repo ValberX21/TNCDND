@@ -71,6 +71,7 @@
 </div>
 
 @code {
+
     private Dictionary<string, int> dificuldades = new Dictionary<string, int>
     {
         { "Fácil", 3 }, // número de 1 a 4
@@ -91,6 +92,7 @@
     private string idJogador = "";
     private string nomeJogador = "";
     private int numeroTentativa = 0;
+    private string dificuldatePartida = "";
 
     private void StartGame()
     {
@@ -101,12 +103,15 @@
             switch(selectedDifficulty){
                 case "Fácil":
                     numeroAlvo = rng.Next(1, 4);
+                    dificuldatePartida = "Fácil";
                     break;
                 case "Médio":
                     numeroAlvo = rng.Next(1,8);
+                    dificuldatePartida = "Médio";
                     break;
                 case "Difícil":
                     numeroAlvo = rng.Next(1, 10);
+                    dificuldatePartida = "Difícil";
                     break;
             }
 
@@ -116,7 +121,7 @@
     }
 
     private async Task ConfirmarTentativa()
-    {
+    {    
         if (numeroDigitado > 0)
         {
             HistoricoTentativas numeroJaJogado = userTries.Find(T => T.VALOR_TENTATIVA == numeroDigitado);
@@ -137,7 +142,7 @@
                         VALOR_TENTATIVA = numeroDigitado,
                         NUM_TENTATIVA = numeroTentativa,
                         DataHoraTentativa = DateTime.Now,
-                        Resultado = TentativaResultado.WRONG.ToString() //"WRONG"
+                        Resultado = TentativaResultado.WRONG.ToString() 
                     });
 
                     await LoadUserTries();
@@ -172,8 +177,9 @@
                 var responseJogo = await Http.PostAsJsonAsync("https://localhost:44387/jogos/create", new
                 {
                     IdJogo = idGame,
-                    COD_JOGADOR = idJogador,
-                    RESULTADO_JOGO = JogoResultado.VITORIA.ToString()
+                    IdJogador = idJogador,
+                    DIFICULDADE = dificuldatePartida,
+                    resultadO_JOGO = JogoResultado.VITORIA.ToString()
                 });
 
                 await LoadUserTries();
@@ -198,17 +204,17 @@
 
                 await LoadUserTries();
                 numeroDigitado = 0;
-               
+
             }
 
             if (userTries.Count == tentativas)
             {
-
                 //Salva resultado final do jogo
-                var responseJogo = await Http.PostAsJsonAsync("https://localhost:44387/jogo/create", new
+                var responseJogo = await Http.PostAsJsonAsync("https://localhost:44387/jogos/create", new
                 {
                     IdJogo = idGame,
-                    COD_JOGADOR = idJogador,
+                    IdJogador = idJogador,
+                    DIFICULDADE = dificuldatePartida,
                     RESULTADO_JOGO = JogoResultado.DERROTA.ToString()
                 });
 
@@ -234,6 +240,7 @@
         color = false;
         numeroDigitado = 0;
         idGame = Guid.Empty;
+        dificuldatePartida = "";
     }
 
     protected override async Task OnInitializedAsync()

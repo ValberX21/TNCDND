@@ -1,11 +1,13 @@
 ﻿@inherits LayoutComponentBase
 @implements IDisposable
 @inject _5_JogoFrontEndWeb.Services.LoginState LoginState
+@inject Blazored.LocalStorage.ILocalStorageService LocalStorage
+@inject NavigationManager Navigation
 
 <PageTitle>5-JogoFrontEndWeb</PageTitle>
 
 <div class="page">
-    @if (LoginState.IsLoggedIn)
+    @if (LoginState.IsLoggedIn && !IsLoginPage)
     {
         <div class="sidebar">
             <NavMenu />
@@ -13,10 +15,6 @@
     }
 
     <main>
-        <div class="top-row px-4">
-            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
-        </div>
-
         <article class="content px-4">
             @Body
         </article>
@@ -24,6 +22,21 @@
 </div>
 
 @code {
+    private bool loginChecked = false;
+
+    private bool IsLoginPage =>
+        Navigation.Uri.EndsWith("/") || Navigation.Uri.EndsWith("/index");
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !loginChecked)
+        {
+            loginChecked = true;
+            await LoginState.RestoreFromLocalStorageAsync(LocalStorage);
+            StateHasChanged();
+        }
+    }
+
     protected override void OnInitialized()
     {
         LoginState.OnChange += StateHasChanged;
@@ -34,4 +47,3 @@
         LoginState.OnChange -= StateHasChanged;
     }
 }
-

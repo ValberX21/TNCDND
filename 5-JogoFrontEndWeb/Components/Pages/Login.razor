@@ -110,16 +110,30 @@
     {
         try
         {
-            var response = await Http.PostAsJsonAsync("/jogadores", new
+            var response = await Http.PostAsJsonAsync("https://localhost:44387/jogadores/create", new
             {
-                Nome = createData.NovoJogadorNome,
+                NomeJogador = createData.NovoJogadorNome,
                 Senha = createData.NovoJogadorSenha
             });
 
             if (response.IsSuccessStatusCode)
             {
-                CreateMessage = $"Usuário {createData.NovoJogadorNome} criado com sucesso!";
-                createData = new CreateModel(); // limpa os campos
+                var dadosJogado = await response.Content.ReadFromJsonAsync<LoginResponse>();
+
+                if (dadosJogado != null)
+                {
+                    await LocalStorage.SetItemAsync("idJogador", dadosJogado.Jogador.IdJogador);
+                    await LocalStorage.SetItemAsync("nomeJogador", dadosJogado.Jogador.NomeJogador);
+
+                    LoginState.Login();
+                    Navigation.NavigateTo("/home", replace: true);
+
+                }
+                else
+                {
+                    Message = "Erro ao carregador os dados do jogador";
+                }
+
             }
             else
             {

@@ -29,7 +29,7 @@
 
                         @if (selectedId == attempt.IdJogo)
                         {
-                            <p>@attempt.DIFICULDADE</p>
+                            <p>Dificuldade: @attempt.DIFICULDADE</p>
                             <div class="mt-2">                                
                                 <p>Lista de tentativas</p>
                                 @foreach (var tentativas in tentativas)
@@ -54,8 +54,7 @@
     private string idJogador = "";
     private string nomeJogador = "";
     private bool retornouDt = false;
-
-
+    private bool initialized = false;
 
     private async Task LoadUserTries()
     {
@@ -74,12 +73,19 @@
         }
     }
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        idJogador = await LocalStorage.GetItemAsync<string>("idJogador");
-        nomeJogador = await LocalStorage.GetItemAsync<string>("nomeJogador");
+        if (firstRender && !initialized)
+        {
+            initialized = true;
+            idJogador = await LocalStorage.GetItemAsync<string>("idJogador");
+            nomeJogador = await LocalStorage.GetItemAsync<string>("nomeJogador");
 
-        await LoadUserTries();
+            await LoadUserTries();
+            
+            StateHasChanged();
+        }
+      
     }
 
     private async Task ToggleDetails(Guid id)

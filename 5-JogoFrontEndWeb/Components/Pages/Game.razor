@@ -5,7 +5,7 @@
 @inject IJSRuntime JS
 @inject Blazored.LocalStorage.ILocalStorageService LocalStorage
 @using _5_JogoFrontEndWeb.Enums
-
+@inject _5_JogoFrontEndWeb.Services.ChamadaAPI ChamadaAPI
 
 <PageTitle>Game</PageTitle>
 
@@ -93,6 +93,7 @@
     private string nomeJogador = "";
     private int numeroTentativa = 0;
     private string dificuldatePartida = "";
+    private bool initialized = false;
 
     private void StartGame()
     {
@@ -134,7 +135,7 @@
                 if(resposta)
                 {
                     //Salva tentativa
-                    var response = await Http.PostAsJsonAsync("https://localhost:44387/historicoTentativas/create", new
+                    object dt = new
                     {
                         IdHistoriTentativa = Guid.NewGuid(),
                         IdJogo = idGame,
@@ -142,8 +143,10 @@
                         VALOR_TENTATIVA = numeroDigitado,
                         NUM_TENTATIVA = numeroTentativa,
                         DataHoraTentativa = DateTime.Now,
-                        Resultado = TentativaResultado.WRONG.ToString() 
-                    });
+                        Resultado = TentativaResultado.WRONG.ToString()
+                    };
+
+                    await ChamadaAPI.salvaTentativa("historicoTentativas/create", dt);
 
                     await LoadUserTries();
 
@@ -162,7 +165,7 @@
             if(numeroDigitado == numeroAlvo)
             {
                 //Salva tentativa
-                var response = await Http.PostAsJsonAsync("https://localhost:44387/historicoTentativas/create", new
+                object dt = new
                 {
                     IdHistoriTentativa = Guid.NewGuid(),
                     IdJogo = idGame,
@@ -171,16 +174,20 @@
                     NUM_TENTATIVA = numeroTentativa,
                     DataHoraTentativa = DateTime.Now,
                     Resultado = TentativaResultado.SUCCESS.ToString()
-                });
+                };
+
+                await ChamadaAPI.salvaTentativa("historicoTentativas/create", dt);
 
                 //Salva resultado final do jogo
-                var responseJogo = await Http.PostAsJsonAsync("https://localhost:44387/jogos/create", new
+                object dtWinGame = new
                 {
                     IdJogo = idGame,
                     IdJogador = idJogador,
                     DIFICULDADE = dificuldatePartida,
                     resultadO_JOGO = JogoResultado.VITORIA.ToString()
-                });
+                };
+
+                await ChamadaAPI.salvaTentativa("jogos/create", dtWinGame);
 
                 await LoadUserTries();
 
@@ -191,7 +198,7 @@
             else 
             {
                 //Salva tentativa
-                var response = await Http.PostAsJsonAsync("https://localhost:44387/historicoTentativas/create", new
+                object dt = new
                 {
                     IdHistoriTentativa = Guid.NewGuid(),
                     IdJogo = idGame,
@@ -200,23 +207,26 @@
                     NUM_TENTATIVA = numeroTentativa,
                     DataHoraTentativa = DateTime.Now,
                     Resultado = TentativaResultado.WRONG.ToString()
-                });
+                };
+
+                await ChamadaAPI.salvaTentativa("historicoTentativas/create", dt);
 
                 await LoadUserTries();
                 numeroDigitado = 0;
-
             }
 
             if (userTries.Count == tentativas)
             {
                 //Salva resultado final do jogo
-                var responseJogo = await Http.PostAsJsonAsync("https://localhost:44387/jogos/create", new
+                object dt = new
                 {
                     IdJogo = idGame,
                     IdJogador = idJogador,
                     DIFICULDADE = dificuldatePartida,
                     RESULTADO_JOGO = JogoResultado.DERROTA.ToString()
-                });
+                };
+
+                await ChamadaAPI.salvaTentativa("jogos/create", dt);
 
                 JS.InvokeVoidAsync("alert", "VC PERDEU AMIGO(A) AHAHA !!!");
                 resetGame();
@@ -239,14 +249,22 @@
         numeroAlvo = 0;        
         color = false;
         numeroDigitado = 0;
-        idGame = Guid.Empty;
+        idGame = Guid.NewGuid();
         dificuldatePartida = "";
     }
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        idJogador = await LocalStorage.GetItemAsync<string>("idJogador");
-        nomeJogador = await LocalStorage.GetItemAsync<string>("nomeJogador");
+        if (firstRender && !initialized)
+        {
+            initialized = true;
+
+            idJogador = await LocalStorage.GetItemAsync<string>("idJogador");
+            nomeJogador = await LocalStorage.GetItemAsync<string>("nomeJogador");
+
+            StateHasChanged();
+        }
+      
     }
 
     private async Task LoadUserTries()

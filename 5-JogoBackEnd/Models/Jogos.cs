@@ -11,6 +11,6 @@ namespace _5_JogoBackEnd.Models
         public Guid IdJogador { get; set; }
         public string DIFICULDADE { get; set; }
         public string RESULTADO_JOGO { get; set; }
-        public DateTime DataHoraJogo { get; set; } = DateTime.Now;
+        public DateTime DataHoraJogo { get; set; } = DateTime.Now.AddHours(-3);
     }
 }

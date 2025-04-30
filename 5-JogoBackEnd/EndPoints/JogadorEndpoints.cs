@@ -35,7 +35,8 @@ public static class JogadorEndpoints
             jogador.Senha = PasswordHelper.HashPassword(jogador.Senha);
 
             await db.Jogadores.InsertOneAsync(jogador);
-            return Results.Created($"/jogadores/{jogador.IdJogador}", jogador);
+            return Results.Json(new { message = "Jogador criado com sucesso!", jogador = jogador }, statusCode: StatusCodes.Status200OK);
+            //return Results.Created($"/jogadores/{jogador.IdJogador}", jogador);
         });
 
         group.MapGet("/listJogadores", async ( MongoDbContext db) => 

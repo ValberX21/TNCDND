@@ -1,4 +1,6 @@
 ﻿@page "/home"
+@inject HttpClient Http
+@using _5_JogoFrontEndWeb.Models
 @inject NavigationManager Navigation
 @inject Blazored.LocalStorage.ILocalStorageService LocalStorage
 
@@ -6,84 +8,78 @@
 
 <h1>Bem vindo de volta @nomeJogador</h1>
 
-<!-- Cards lado a lado -->
 <div class="d-flex gap-4 mt-4">
 
-    <!-- Desempenho Card -->
     <div class="card" style="width: 22rem;">
         <div class="card-body">
             <h5 class="card-title">Seu Desempenho</h5>
             <p class="card-text">
                 <strong>Vitórias:</strong> @vitorias <br />
                 <strong>Derrotas:</strong> @derrotas <br />
-                <strong>Taxa de Vitória:</strong> @porcentagemVitória.ToString("0.00")%
+                <strong>Taxa de Vitória:</strong> @porcentagemVitória.ToString("0.00")% <br />
+                <strong>Voce esta no rank:</strong> @rank <br />
             </p>
-        </div>
-    </div>
-
-    <!-- Rank Card -->
-    <div class="card" style="width: 22rem;">
-        <div class="card-body">
-            <h5 class="card-title">Rank do Jogador</h5>
-
-            @if (showRank)
-            {
-                <p><strong>Vitórias:</strong> @vitoriass</p>
-                <p><strong>Derrotas:</strong> @derrotass</p>
-                <p><strong>Porcentagem de Vitórias:</strong> @porcentagemVit.ToString("F1")%</p>
-                <p><strong>Rank:</strong> <span class="fw-bold">@rank</span></p>
-            }
-            else
-            {
-                <p class="text-muted">Efetue login para ver seu rank.</p>
-            }
         </div>
     </div>
 
 </div>
 
-<!-- Botão de jogar -->
 <button class="btn btn-primary mt-4" @onclick="iniciarPartida">JOGAR</button>
 
 @code {
-    private bool showRank = false;
-    private int vitoriass = 0;
-    private int derrotass = 0;
+
+    private List<Jogos> jogosCount = new List<Jogos>();
     private double porcentagemVit = 0;
     private string rank = "";
-
     private string idJogador = "";
     private string nomeJogador = "";
     private int vitorias = 0;
     private int derrotas = 0;
     private double porcentagemVitória = 0;
+    private bool initialized = false;
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        idJogador = await LocalStorage.GetItemAsync<string>("idJogador");
-        nomeJogador = await LocalStorage.GetItemAsync<string>("nomeJogador");
-
-        // MOCK de dados para exemplo:
-        vitorias = 8;   // <-- API vai preencher depois
-        derrotas = 2;
-
-        int totalPartidas = vitorias + derrotas;
-
-        if (totalPartidas > 0)
+        if (firstRender && !initialized)
         {
-            porcentagemVitória = (vitorias * 100.0) / totalPartidas;
-        }
-        else
-        {
-            porcentagemVitória = 0;
-        }
+            initialized = true;
+            idJogador = await LocalStorage.GetItemAsync<string>("idJogador");
+            nomeJogador = await LocalStorage.GetItemAsync<string>("nomeJogador");
 
-        // Para exibir o card de Rank:
-        vitoriass = vitorias;
-        derrotass = derrotas;
-        porcentagemVit = porcentagemVitória;
-        rank = CalcularRank(vitorias, derrotas);
-        showRank = true;
+            try
+            {
+                var jogoJogador = await Http.GetFromJsonAsync<List<Jogos>>($"https://localhost:44387/jogos/listjogos/{idJogador}");
+
+                if (jogoJogador != null)
+                {
+                    jogosCount = jogoJogador;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erro ao buscar tentativas: {ex.Message}");
+            }
+
+            vitorias = jogosCount.Count(j => j.RESULTADO_JOGO == "VITORIA");
+            derrotas = jogosCount.Count(j => j.RESULTADO_JOGO == "DERROTA");
+
+            int totalPartidas = vitorias + derrotas;
+
+            if (totalPartidas > 0)
+            {
+                porcentagemVitória = (vitorias * 100.0) / totalPartidas;
+            }
+            else
+            {
+                porcentagemVitória = 0;
+            }
+
+            porcentagemVit = porcentagemVitória;
+            rank = CalcularRank(vitorias, derrotas);
+
+            StateHasChanged();
+
+        }       
     }
 
     private void iniciarPartida()
@@ -93,18 +89,25 @@
 
     private string CalcularRank(int vitorias, int derrotas)
     {
-        if (derrotas == 0 && vitorias > 0)
-            return "S";
-
-        double pct = (double)vitorias / (vitorias + derrotas) * 100;
-
-        return pct switch
+        if(vitorias == 0 && derrotas == 0)
         {
-            >= 90 => "A",
-            >= 75 => "B",
-            >= 50 => "C",
-            >= 25 => "D",
-            _ => "E"
-        };
+            return "Sem rank";
+        }
+        else
+        {
+            if (derrotas == 0 && vitorias > 0)
+                return "S";
+
+            double pct = (double)vitorias / (vitorias + derrotas) * 100;
+
+            return pct switch
+            {
+                >= 90 => "A",
+                >= 75 => "B",
+                >= 50 => "C",
+                >= 25 => "D",
+                _ => "E"
+            };
+        }       
     }
 }

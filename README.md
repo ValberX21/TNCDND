@@ -47,20 +47,27 @@ Este projeto é um jogo interativo onde o jogador deve adivinhar o número de um
 
 2. Instalar MongoDb compass e CONFERIR A PORTA (padrão: mongodb://localhost:27017)
 
-3. Crie um jogador
+3. Abra a Visual Studio
+   -> Clique com o botão direito em Solution
+   -> Properties
+   -> Cliquem em 'Start' no 'JogoBackEnd' e 'JogoFrontEndWeb' para iniciar a API e o Front Blazor
+
+   ![loginImg](5-JogoFrontEndWeb/Imagens/startProject.png)
+   
+4. Crie um jogador
 
 
       ![loginImg](5-JogoFrontEndWeb/Imagens/loginCreate.png)
 
-4. Na tela home, clique em "Jogar" (As estatisticas e rank vão aparecer conforme vc for jogando)
+5. Na tela home, clique em "Jogar" (As estatisticas e rank vão aparecer conforme vc for jogando)
 
       ![loginImg](5-JogoFrontEndWeb/Imagens/dataPlayer.png)
 
-5. Seleciona a dificuldade de clique em jogar.
+6. Seleciona a dificuldade de clique em jogar.
 Conforme vc for errando as tentativas vão ser listadas ao lado
 
       ![loginImg](5-JogoFrontEndWeb/Imagens/gameHome.png)
    
-6. Historico de partidas e dados na mesma na opção de 'Historico de jogos'
+7. Historico de partidas e dados na mesma na opção de 'Historico de jogos'
 
      ![loginImg](5-JogoFrontEndWeb/Imagens/historicoJogos.png)

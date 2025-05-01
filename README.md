@@ -1,4 +1,3 @@
-# TNCDND
 # Jogo de Adivinhação de Número (Blazor + .NET + MongoDB)
 
 Este projeto é um jogo interativo onde o jogador deve adivinhar o número de um dado RPG (D4, D8, D10). A aplicação foi construída com **Blazor** no frontend, **.NET Minimal API** no backend e **MongoDB** como banco de dados.
@@ -6,12 +5,8 @@ Este projeto é um jogo interativo onde o jogador deve adivinhar o número de um
 ## 🧩 Funcionalidades
 
 - **Histórico de Tentativas**  
-  Todas as jogadas são registradas em um objeto `Historico`, contendo:
-  - `COD_JOGADOR`
-  - `NUM_TENTATIVA`
-  - `DATA_HORA`
-  - `RESULTADO` (Success ou Wrong)
-
+  Todas as jogadas são registradas
+  
 - **Enum de Resultado**  
   Enum criado para representar o resultado da tentativa: `SUCCESS` ou `WRONG`.
 
@@ -19,7 +14,7 @@ Este projeto é um jogo interativo onde o jogador deve adivinhar o número de um
   Um dicionário retorna as dificuldades disponíveis (`D4`, `D8`, `D10`) com o número de tentativas permitidas para cada uma.
 
 - **Validação de Tentativas Repetidas**  
-  Caso o jogador tente um número já utilizado anteriormente, a jogada é invalidada e uma mensagem de aviso é exibida.
+  Caso o jogador tente um número já utilizado anteriormente, a jogada é perdida e uma mensagem de aviso é exibida.
 
 - **Histórico do Jogador**  
   O jogador pode visualizar o histórico completo de suas tentativas e também o histórico de uma partida específica.

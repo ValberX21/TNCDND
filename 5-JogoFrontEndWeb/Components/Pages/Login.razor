@@ -11,7 +11,7 @@
     <div class="d-flex gap-5">
 
         <div class="card p-4" style="width: 300px;">
-            <h3>Login</h3>
+            <h3>Login jogador</h3>
 
             <EditForm Model="@loginData" OnValidSubmit="LoginJogador">
                 <DataAnnotationsValidator />
@@ -21,7 +21,7 @@
                     <label>Nome do jogador:</label>
                     <InputText @bind-Value="loginData.NomeJogador" class="form-control" />
 
-                    <label class="mt-2">Password:</label>
+                    <label class="mt-2">Senha:</label>
                     <InputText @bind-Value="loginData.Senha" class="form-control" type="password" />
 
                     <button type="submit" class="btn btn-primary mt-3">Login</button>
@@ -35,7 +35,7 @@
         </div>
 
         <div class="card p-4" style="width: 300px;">
-            <h3>Create User</h3>
+            <h3>Criar novo jogador</h3>
 
             <EditForm Model="@createData" OnValidSubmit="CreateJogador">
                 <DataAnnotationsValidator />

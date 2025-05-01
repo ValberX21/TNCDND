@@ -45,8 +45,9 @@ Este projeto é um jogo interativo onde o jogador deve adivinhar o número de um
    ```bash
    git clone https://github.com/seu-usuario/nome-do-repo.git
 
-2. Instalar MongoDb compass
-Conferir a porta (padrão: mongodb://localhost:27017)
+2. Instalar MongoDb compass e CONFERIR A PORTA (padrão: mongodb://localhost:27017)
 
 3. Crie um jogador
-      ![loginImg](Images/loginCreate.png)
+
+
+      ![loginImg](5-JogoFrontEndWeb/Imagens/loginCreate.png)

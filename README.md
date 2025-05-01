@@ -1,4 +1,9 @@
-# Jogo de Adivinhação de Número (Blazor + .NET + MongoDB)
+# Itens 1 a 4
+
+Selecionar o projeto
+Clique em 'Set as Startup Project'
+
+# Item 5 - Jogo de Adivinhação de Número (Blazor + .NET + MongoDB)
 
 Este projeto é um jogo interativo onde o jogador deve adivinhar o número de um dado RPG (D4, D8, D10). A aplicação foi construída com **Blazor** no frontend, **.NET Minimal API** no backend e **MongoDB** como banco de dados.
 
@@ -39,3 +44,9 @@ Este projeto é um jogo interativo onde o jogador deve adivinhar o número de um
 1. Clone o repositório:
    ```bash
    git clone https://github.com/seu-usuario/nome-do-repo.git
+
+2. Instalar MongoDb compass
+Conferir a porta (padrão: mongodb://localhost:27017)
+
+3. Crie um jogador
+        

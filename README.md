@@ -49,4 +49,4 @@ Este projeto é um jogo interativo onde o jogador deve adivinhar o número de um
 Conferir a porta (padrão: mongodb://localhost:27017)
 
 3. Crie um jogador
-        
+      ![loginImg](Images/loginCreate.png)
